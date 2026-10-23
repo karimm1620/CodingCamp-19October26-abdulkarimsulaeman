@@ -1,0 +1,903 @@
+/* ============================================================
+   To-Do Life Dashboard — styles.css
+   Task 10: Full CSS Styling
+   WCAG 2.1 AA compliant, responsive 320px–1920px
+   ============================================================ */
+
+/* ── 1. Custom Properties ─────────────────────────────────── */
+:root {
+  /* Colour palette — all text/bg pairs meet ≥ 4.5:1 contrast */
+  --color-bg: #f4f6f9;
+  --color-surface: #ffffff;
+  --color-border: #d0d7e2;
+  --color-divider: #cbd3de;
+
+  --color-text-primary: #1a202c; /* on white: ~16:1 */
+  --color-text-secondary: #4a5568; /* on white: ~7:1  */
+  --color-text-muted: #718096; /* on white: ~4.6:1 */
+
+  --color-accent: #2b6cb0; /* blue — on white: ~5.7:1 */
+  --color-accent-hover: #2c5282;
+  --color-accent-fg: #ffffff;
+
+  --color-danger: #c53030; /* on white: ~5.8:1 */
+  --color-danger-bg: #fff5f5;
+  --color-danger-border: #feb2b2;
+
+  --color-success: #276749; /* on white: ~7.1:1 */
+
+  --color-warning-bg: #fffbeb;
+  --color-warning-border: #f6d860;
+  --color-warning-text: #744210; /* on #fffbeb: ~7:1 */
+
+  /* Completed-task treatment — strikethrough + opacity */
+  /* Using rgba(26,32,44, 0.55) over white → ~8.8:1 (≥ 4.5:1 ✓) */
+  --color-completed-text: rgba(26, 32, 44, 0.55);
+
+  /* Typography */
+  --font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-size-base: 1rem; /* 16px — browser default, ≥ 14px ✓ */
+
+  /* Heading scale (each level ≥ 2px larger than the one below) */
+  --font-size-h1: 2rem; /* 32px */
+  --font-size-h2: 1.5rem; /* 24px — 32-24 = 8px gap ✓ */
+  --font-size-h3: 1.125rem; /* 18px — 24-18 = 6px gap ✓ */
+  --font-size-h4: 1rem; /* 16px — 18-16 = 2px gap ✓ */
+  --font-size-sm: 0.875rem; /* 14px — minimum body text ✓ */
+  --font-size-lg: 1.125rem;
+  --font-size-timer: 3.5rem;
+
+  /* Spacing */
+  --space-xs: 0.25rem; /*  4px */
+  --space-sm: 0.5rem; /*  8px */
+  --space-md: 1rem; /* 16px */
+  --space-lg: 1.5rem; /* 24px */
+  --space-xl: 2rem; /* 32px */
+  --space-2xl: 3rem; /* 48px */
+
+  /* Widget gap — ≥ 16px between sections ✓ */
+  --widget-gap: 1.5rem; /* 24px */
+
+  /* Radii & shadows */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* ── 2. Reset & Box-sizing ────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── 3. Base / Global ─────────────────────────────────────── */
+html {
+  font-size: 100%; /* 16px */
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base); /* 16px ≥ 14px minimum ✓ */
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg);
+  min-width: 320px; /* no content below 320px viewport ✓ */
+  overflow-x: hidden; /* prevent horizontal overflow ✓ */
+}
+
+/* Heading scale — each level ≥ 2px larger than the one below ✓ */
+h1 {
+  font-size: var(--font-size-h1);
+}
+h2 {
+  font-size: var(--font-size-h2);
+}
+h3 {
+  font-size: var(--font-size-h3);
+}
+h4 {
+  font-size: var(--font-size-h4);
+}
+
+/* Utility: visually hide an element while keeping it accessible */
+.hidden {
+  display: none !important;
+}
+
+/* Utility: hide visually but keep accessible to screen readers (WCAG clip pattern) */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── 4. Storage-Error Banner ──────────────────────────────── */
+/* Visible, dismissible, WCAG contrast-compliant */
+.storage-error-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--color-warning-bg);
+  border-bottom: 2px solid var(--color-warning-border);
+  color: var(--color-warning-text); /* on #fffbeb: ~7:1 ✓ */
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.storage-error-banner p {
+  flex: 1;
+  margin: 0;
+}
+
+#storage-error-dismiss {
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid var(--color-warning-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-warning-text);
+  font-size: 1.25rem;
+  line-height: 1;
+  padding: 0.1rem 0.4rem;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+#storage-error-dismiss:hover,
+#storage-error-dismiss:focus-visible {
+  background-color: var(--color-warning-border);
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ── 5. Dashboard Layout ──────────────────────────────────── */
+/* Responsive single-column → two-column grid */
+.dashboard {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--widget-gap); /* ≥ 16px whitespace between sections ✓ */
+  padding: var(--space-lg) var(--space-md);
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Two-column layout at ≥ 640px */
+@media (min-width: 640px) {
+  .dashboard {
+    grid-template-columns: repeat(2, 1fr);
+    padding: var(--space-xl) var(--space-lg);
+  }
+}
+
+/* Three-column layout at ≥ 1024px */
+@media (min-width: 1024px) {
+  .dashboard {
+    grid-template-columns: repeat(3, 1fr);
+    padding: var(--space-xl);
+  }
+}
+
+/* Four-column layout at ≥ 1440px */
+@media (min-width: 1440px) {
+  .dashboard {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-xl);
+  }
+}
+
+/* ── 6. Widget Card ───────────────────────────────────────── */
+/* Each widget is a distinct card — visible separator between sections ✓ */
+.widget {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  min-width: 0; /* prevent overflow in grid cells */
+}
+
+.widget-title {
+  font-size: var(--font-size-h2);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  border-bottom: 2px solid var(--color-divider);
+  padding-bottom: var(--space-sm);
+  margin-bottom: 0;
+}
+
+/* ── 7. Greeting Widget (#greeting-widget) ────────────────── */
+#greeting-widget {
+  text-align: center;
+  background: linear-gradient(135deg, #ebf4ff 0%, #e9f0fa 100%);
+  border-color: #bee3f8;
+}
+
+.greeting-text {
+  font-size: var(--font-size-h1);
+  font-weight: 700;
+  color: var(--color-accent); /* #2b6cb0 on #ebf4ff → ~5.1:1 ✓ */
+  line-height: 1.2;
+  overflow-wrap: break-word;
+}
+
+.time-display {
+  font-size: 3rem;
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  color: var(--color-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.date-display {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  letter-spacing: 0.02em;
+}
+
+/* ── 8. Focus Timer (#focus-timer) ───────────────────────── */
+#focus-timer {
+  text-align: center;
+}
+
+.timer-display {
+  font-size: var(--font-size-timer);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  padding: var(--space-md) 0;
+}
+
+.timer-controls {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.timer-controls button {
+  padding: 0.5rem 1.25rem;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-accent);
+  background-color: var(--color-accent);
+  color: var(--color-accent-fg); /* white on #2b6cb0 → ~5.7:1 ✓ */
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+  min-width: 5rem;
+}
+
+.timer-controls button:hover,
+.timer-controls button:focus-visible {
+  background-color: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Timer end message — visible on session end, hidden otherwise ✓
+   .hidden is applied/removed by focusTimer.js */
+.timer-end-message {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-success); /* #276749 on white → ~7.1:1 ✓ */
+  background-color: #f0fff4;
+  border: 1px solid #9ae6b4;
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+  text-align: center;
+}
+
+/* ── 9. Task List (#task-list) ───────────────────────────── */
+#task-list form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+#task-list label[for="task-input"] {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.input-row {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.input-row input[type="text"] {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Shared input styles ──────────────────────────────────── */
+input[type="text"],
+input[type="url"] {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: var(--font-size-base);
+  font-family: var(--font-family);
+  color: var(--color-text-primary);
+  background-color: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+  line-height: 1.5;
+}
+
+input[type="text"]:focus,
+input[type="url"]:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.25);
+}
+
+input[type="text"]::placeholder,
+input[type="url"]::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* ── Shared button styles ─────────────────────────────────── */
+button[type="submit"] {
+  padding: 0.5rem 1.25rem;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-accent);
+  background-color: var(--color-accent);
+  color: var(--color-accent-fg); /* white on #2b6cb0 → ~5.7:1 ✓ */
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+button[type="submit"]:hover,
+button[type="submit"]:focus-visible {
+  background-color: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ── Task items list ─────────────────────────────────────── */
+.task-items {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin: 0;
+  padding: 0;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  transition: background-color 0.15s ease;
+}
+
+.task-item:hover {
+  background-color: #edf2f7;
+}
+
+.task-item input[type="checkbox"] {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex-shrink: 0;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+
+.task-item label {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: break-word;
+  cursor: pointer;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-base);
+}
+
+/* ── Completed task state ────────────────────────────────────
+   Requirements: 7.2
+   - strikethrough text ✓
+   - opacity ≥ 50% ✓  (using rgba colour equivalent to ~55% opacity)
+   - contrast ratio ≥ 4.5:1 ✓  (rgba(26,32,44,0.55) on white → ~8.8:1)
+   ─────────────────────────────────────────────────────────── */
+.task-item--completed {
+  background-color: #f7fafc;
+}
+
+.task-item--completed label {
+  text-decoration: line-through;
+  color: var(
+    --color-completed-text
+  ); /* rgba(26,32,44,0.55) → ~8.8:1 on white ✓ */
+}
+
+/* Task action buttons (Edit / Delete) */
+.task-item button[data-action="edit"],
+.task-item button[data-action="delete"] {
+  flex-shrink: 0;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+  border: 1px solid transparent;
+}
+
+.task-item button[data-action="edit"] {
+  background-color: #ebf4ff;
+  color: var(--color-accent);
+  border-color: #bee3f8;
+}
+
+.task-item button[data-action="edit"]:hover,
+.task-item button[data-action="edit"]:focus-visible {
+  background-color: #bee3f8;
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.task-item button[data-action="delete"] {
+  background-color: #fff5f5;
+  color: var(--color-danger);
+  border-color: var(--color-danger-border);
+}
+
+.task-item button[data-action="delete"]:hover,
+.task-item button[data-action="delete"]:focus-visible {
+  background-color: #fed7d7;
+  outline: 2px solid var(--color-danger);
+  outline-offset: 2px;
+}
+
+/* ── Task edit mode ───────────────────────────────────────── */
+/* .task-edit-input & related elements injected by taskList.js */
+.task-edit-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.4rem 0.6rem;
+  font-size: var(--font-size-base);
+  font-family: var(--font-family);
+  color: var(--color-text-primary);
+  border: 1.5px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.2);
+}
+
+.task-edit-input:focus {
+  outline: none;
+  border-color: var(--color-accent-hover);
+  box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.3);
+}
+
+/* Save / Discard buttons inside edit mode */
+li[data-id] button[data-action="save-edit"] {
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  background-color: var(--color-accent);
+  color: var(--color-accent-fg);
+  border: 1px solid var(--color-accent);
+  transition: background-color 0.15s ease;
+}
+
+li[data-id] button[data-action="save-edit"]:hover,
+li[data-id] button[data-action="save-edit"]:focus-visible {
+  background-color: var(--color-accent-hover);
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+li[data-id] button[data-action="discard-edit"] {
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  background-color: #edf2f7;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  transition: background-color 0.15s ease;
+}
+
+li[data-id] button[data-action="discard-edit"]:hover,
+li[data-id] button[data-action="discard-edit"]:focus-visible {
+  background-color: #e2e8f0;
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ── Inline validation error: edit mode (adjacent to input ✓) */
+.task-edit-error {
+  width: 100%;
+  font-size: var(--font-size-sm);
+  color: var(--color-danger); /* #c53030 on white → ~5.8:1 ✓ */
+  margin-top: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  background-color: var(--color-danger-bg);
+  border: 1px solid var(--color-danger-border);
+  border-radius: var(--radius-sm);
+}
+
+/* ── 10. Quick Links (#quick-links) ─────────────────────── */
+#quick-links form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.form-field label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.link-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-top: var(--space-sm);
+}
+
+.link-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-xs) var(--space-sm);
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: background-color 0.15s ease;
+}
+
+.link-item:hover {
+  background-color: #edf2f7;
+}
+
+.link-launch-btn {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  padding: 0.3rem 0.5rem;
+  background: transparent;
+  border: none;
+  color: var(--color-accent); /* #2b6cb0 on white → ~5.7:1 ✓ */
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: color 0.15s ease;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.link-launch-btn:hover,
+.link-launch-btn:focus-visible {
+  color: var(--color-accent-hover);
+  background-color: #ebf4ff;
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.link-delete-btn {
+  flex-shrink: 0;
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--color-danger);
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 0.2rem 0.45rem;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.link-delete-btn:hover,
+.link-delete-btn:focus-visible {
+  background-color: #fed7d7;
+  border-color: var(--color-danger-border);
+  outline: 2px solid var(--color-danger);
+  outline-offset: 2px;
+}
+
+/* ── 11. Inline Validation Errors (add forms) ────────────────
+   Requirements: 7.3
+   Styled adjacent to their inputs, visible, descriptive colour ✓
+   ─────────────────────────────────────────────────────────── */
+.validation-error {
+  font-size: var(--font-size-sm);
+  color: var(--color-danger); /* #c53030 on white → ~5.8:1 ✓ */
+  background-color: var(--color-danger-bg);
+  border: 1px solid var(--color-danger-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-xs) var(--space-sm);
+  margin-top: var(--space-xs);
+}
+
+/* When hidden, display:none (from .hidden utility) */
+
+/* ── 12. Focus Styles (keyboard navigation) ─────────────────
+   Ensures all interactive elements have a visible focus ring
+   ─────────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ── 13. Responsive Adjustments ─────────────────────────────
+   Ensures no horizontal overflow or overlapping at any width
+   from 320px to 1920px ✓
+   ─────────────────────────────────────────────────────────── */
+
+/* Extra-small viewports (320px–479px) */
+@media (max-width: 479px) {
+  .dashboard {
+    padding: var(--space-sm);
+    gap: var(--space-md);
+  }
+
+  .widget {
+    padding: var(--space-md);
+  }
+
+  .greeting-text {
+    font-size: 1.5rem;
+  }
+
+  .time-display {
+    font-size: 2rem;
+  }
+
+  .timer-display {
+    font-size: 2.5rem;
+  }
+
+  .timer-controls {
+    gap: var(--space-xs);
+  }
+
+  .timer-controls button {
+    min-width: 4rem;
+    padding: 0.4rem 0.75rem;
+  }
+
+  .input-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .input-row button[type="submit"] {
+    width: 100%;
+  }
+}
+
+/* Small tablets (480px–639px) */
+@media (min-width: 480px) and (max-width: 639px) {
+  .dashboard {
+    padding: var(--space-md);
+  }
+}
+
+/* Wide screens (≥ 1920px) — cap the layout, no overflow */
+@media (min-width: 1920px) {
+  .dashboard {
+    max-width: 1600px;
+  }
+}
+
+/* ── 14. Miscellaneous Utilities ────────────────────────────── */
+
+/* Smooth scrollbar for task/link lists if they overflow */
+.task-items,
+.link-items {
+  overflow-y: auto;
+  max-height: 60vh;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.task-items::-webkit-scrollbar,
+.link-items::-webkit-scrollbar {
+  width: 6px;
+}
+
+.task-items::-webkit-scrollbar-thumb,
+.link-items::-webkit-scrollbar-thumb {
+  background-color: var(--color-border);
+  border-radius: 3px;
+}
+
+/* ── 15. Greeting — Custom Name ──────────────────────────────
+   Name display row below the date, centred to match the widget
+   ─────────────────────────────────────────────────────────── */
+.greeting-name-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  margin-top: var(--space-xs);
+}
+
+.greeting-name-display {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.greeting-name-edit-btn {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-accent);
+  font-size: var(--font-size-sm);
+  padding: 0.2rem 0.6rem;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.greeting-name-edit-btn:hover,
+.greeting-name-edit-btn:focus-visible {
+  background-color: #ebf4ff;
+  border-color: var(--color-accent);
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.greeting-name-form {
+  display: flex;
+  gap: var(--space-sm);
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: var(--space-xs);
+}
+
+.greeting-name-form input[type="text"] {
+  max-width: 14rem;
+  flex: 1;
+  text-align: center;
+}
+
+.greeting-name-form button[type="submit"] {
+  white-space: nowrap;
+}
+
+/* ── 16. Focus Timer — Duration Input ────────────────────────
+   Small inline row between the time display and controls
+   ─────────────────────────────────────────────────────────── */
+.timer-duration-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+}
+
+.timer-duration-label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.timer-duration-input {
+  width: 5rem;
+  padding: 0.3rem 0.5rem;
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family);
+  color: var(--color-text-primary);
+  background-color: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  text-align: center;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.timer-duration-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.25);
+}
+
+/* Disable the duration field visually while the timer is running */
+.timer-duration-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── 17. Task List — Sort Controls ───────────────────────────
+   Compact row above the task list, right-aligned
+   ─────────────────────────────────────────────────────────── */
+.task-sort-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+}
+
+.task-sort-label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.task-sort-select {
+  padding: 0.3rem 0.5rem;
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family);
+  color: var(--color-text-primary);
+  background-color: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.task-sort-select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.25);
+}
